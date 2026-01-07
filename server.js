@@ -35,11 +35,8 @@ app.post("/api/create", (req, res) => {
   let max_views = null;
   let expires_at = null;
 
-  if (mode === "views") {
-    max_views = parseInt(value);
-  } else if (mode === "time") {
-    expires_at = Date.now() + parseInt(value) * 60 * 1000;
-  }
+  if (mode === "views") max_views = parseInt(value);
+  if (mode === "time") expires_at = Date.now() + parseInt(value) * 60000;
 
   db.run(
     `INSERT INTO links (token, whatsapp, mode, max_views, expires_at)
@@ -50,32 +47,28 @@ app.post("/api/create", (req, res) => {
 });
 
 app.get("/l/:token", (req, res) => {
-  const { token } = req.params;
-
   db.get(
     "SELECT * FROM links WHERE token = ?",
-    [token],
+    [req.params.token],
     (err, row) => {
       if (!row) return res.send(renderExpired());
 
       if (row.mode === "views") {
         if (row.views >= row.max_views) return res.send(renderExpired());
-
-        db.run("UPDATE links SET views = views + 1 WHERE token = ?", [token]);
-        return res.send(renderProxyPage(row.whatsapp, null));
+        db.run("UPDATE links SET views = views + 1 WHERE token = ?", [row.token]);
+        return res.send(renderProxy(row.whatsapp, null));
       }
 
       if (row.mode === "time") {
-        const remaining = row.expires_at - Date.now();
-        if (remaining <= 0) return res.send(renderExpired());
-
-        return res.send(renderProxyPage(row.whatsapp, remaining));
+        const remain = row.expires_at - Date.now();
+        if (remain <= 0) return res.send(renderExpired());
+        return res.send(renderProxy(row.whatsapp, remain));
       }
     }
   );
 });
 
-function renderProxyPage(wa, remainingMs) {
+function renderProxy(wa, remainingMs) {
   return `
 <!DOCTYPE html>
 <html lang="ru">
@@ -83,76 +76,100 @@ function renderProxyPage(wa, remainingMs) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Proxy</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/whatsapp.svg">
 <style>
 body {
   margin:0;
   height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
-  background:linear-gradient(180deg,#f2f4f8,#e9ecf1);
+  justify-content:center;
+  background:linear-gradient(180deg,#eef2f7,#dfe6ee);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
 .card {
   width:100%;
   max-width:390px;
-  padding:24px;
-  border-radius:28px;
-  background:rgba(255,255,255,0.6);
-  backdrop-filter:blur(20px);
-  box-shadow:0 20px 40px rgba(0,0,0,0.1);
+  padding:28px;
+  border-radius:32px;
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(30px);
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.8);
 }
 h1 {
   text-align:center;
-  font-size:18px;
-  margin-bottom:16px;
+  font-size:20px;
+  margin-bottom:8px;
+}
+.sub {
+  text-align:center;
+  font-size:14px;
+  opacity:.6;
+  margin-bottom:20px;
 }
 .timer {
   text-align:center;
-  font-size:14px;
-  margin-bottom:18px;
-  opacity:0.7;
+  font-size:15px;
+  margin-bottom:22px;
 }
 .btn {
   display:flex;
   align-items:center;
-  justify-content:center;
-  gap:12px;
+  gap:14px;
   padding:16px;
-  border-radius:20px;
+  border-radius:24px;
   font-size:16px;
   font-weight:600;
-  color:white;
   text-decoration:none;
   margin-bottom:14px;
+  box-shadow:0 14px 28px rgba(0,0,0,.18);
 }
-.wa { background:linear-gradient(180deg,#3ddc84,#1fa855); }
-.tg { background:linear-gradient(180deg,#3da9fc,#007adf); }
+.btn img {
+  width:24px;
+  height:24px;
+}
+.wa {
+  color:#0a3;
+  background:linear-gradient(180deg,#e8fff2,#c9f5df);
+}
+.tg {
+  color:#0066cc;
+  background:linear-gradient(180deg,#e9f4ff,#cfe8ff);
+}
 </style>
 </head>
 <body>
 <div class="card">
 <h1>Подключение Proxy</h1>
+<div class="sub">Выберите сервис</div>
+
 ${remainingMs ? `<div class="timer" id="timer"></div>` : ""}
-<a class="btn wa" href="${wa}">Подключить WhatsApp</a>
-<a class="btn tg" href="${TELEGRAM_PROXY}">Подключить Telegram</a>
+
+<a class="btn wa" href="${wa}">
+  <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/whatsapp.svg">
+  Подключить WhatsApp
+</a>
+
+<a class="btn tg" href="${TELEGRAM_PROXY}">
+  <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/telegram.svg">
+  Подключить Telegram
+</a>
 </div>
 
 ${remainingMs ? `
 <script>
-let remaining=${remainingMs};
+let t=${remainingMs};
 const el=document.getElementById("timer");
-function tick(){
-  if(remaining<=0)return;
-  const m=Math.floor(remaining/60000);
-  const s=Math.floor((remaining%60000)/1000);
+setInterval(()=>{
+  if(t<=0)return;
+  const m=Math.floor(t/60000);
+  const s=Math.floor((t%60000)/1000);
   el.textContent="Ссылка активна ещё "+m+" мин "+s+" сек";
-  remaining-=1000;
-}
-tick();
-setInterval(tick,1000);
+  t-=1000;
+},1000);
 </script>` : ""}
-
 </body>
 </html>`;
 }
@@ -170,52 +187,63 @@ body {
   margin:0;
   height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
-  background:linear-gradient(180deg,#f2f4f8,#e9ecf1);
+  justify-content:center;
+  background:linear-gradient(180deg,#eef2f7,#dfe6ee);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
 .card {
   max-width:390px;
-  padding:26px;
-  border-radius:28px;
-  background:rgba(255,255,255,0.6);
-  backdrop-filter:blur(20px);
+  padding:30px;
+  border-radius:34px;
+  background:rgba(255,255,255,0.8);
+  backdrop-filter:blur(30px);
   text-align:center;
+  box-shadow:0 30px 60px rgba(0,0,0,.12);
 }
-h1 { font-size:18px; margin-bottom:12px; }
-p { font-size:14px; opacity:0.7; margin-bottom:24px; }
+h1 { font-size:20px; margin-bottom:10px; }
+p { font-size:14px; opacity:.65; margin-bottom:24px; }
 .arrow {
-  width:40px;
-  height:40px;
-  margin:0 auto 12px;
-  border-right:3px solid #000;
-  border-bottom:3px solid #000;
+  width:24px;
+  height:24px;
+  border-right:3px solid #ff7a00;
+  border-bottom:3px solid #ff7a00;
   transform:rotate(45deg);
-  animation:float 1.5s infinite;
+  margin:0 auto 14px;
+  animation:float 1.4s infinite;
 }
 @keyframes float {
-  0% { transform:rotate(45deg) translate(0,0); }
+  0%,100% { transform:rotate(45deg) translate(0,0); }
   50% { transform:rotate(45deg) translate(6px,6px); }
-  100% { transform:rotate(45deg) translate(0,0); }
 }
 a {
-  display:block;
-  padding:14px;
-  border-radius:20px;
-  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:16px;
+  border-radius:26px;
+  background:linear-gradient(180deg,#ffb347,#ff7a00);
   color:#fff;
-  font-weight:600;
+  font-weight:700;
   text-decoration:none;
+  box-shadow:0 16px 32px rgba(255,122,0,.45);
 }
+a img { width:22px; }
 </style>
 </head>
 <body>
 <div class="card">
 <h1>Срок действия ссылки завершён</h1>
-<p>Временный доступ больше недоступен.<br>Новые ссылки выдаются регулярно.</p>
+<p>
+Временный доступ к Proxy недоступен.<br>
+Если хотите бесплатно подключать Proxy для WhatsApp и Telegram — используйте VPN.
+</p>
 <div class="arrow"></div>
-<a href="${VPN_LINK}">Подключить VPN</a>
+<a href="${VPN_LINK}">
+  <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/shield.svg">
+  Подключить VPN
+</a>
 </div>
 </body>
 </html>`;
