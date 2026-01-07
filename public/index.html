@@ -2,76 +2,217 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Создание ссылки</title>
 
 <style>
+/* ===================== */
+/*  iOS DESIGN TOKENS    */
+/* ===================== */
+
 :root{
-  --bg:linear-gradient(180deg,#eef2f7,#dfe6ee);
-  --glass:rgba(255,255,255,.9);
-  --accent:linear-gradient(180deg,#ffb347,#ff7a00);
+  --bg-light: #eef2f7;
+  --bg-dark: #0f1115;
+
+  --card-light: rgba(255,255,255,.75);
+  --card-dark: rgba(28,28,30,.75);
+
+  --text-light: #111;
+  --text-dark: #fff;
+
+  --sub-light: rgba(0,0,0,.5);
+  --sub-dark: rgba(255,255,255,.55);
+
+  --accent: linear-gradient(180deg,#ffb347,#ff7a00);
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg-light: var(--bg-dark);
+    --card-light: var(--card-dark);
+    --text-light: var(--text-dark);
+    --sub-light: var(--sub-dark);
+  }
+}
+
+/* ===================== */
+/*  GLOBAL               */
+/* ===================== */
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
 body{
-  margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
-  background:var(--bg);
+  margin:0;
+  height:100vh;
+  background:var(--bg-light);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  color:var(--text-light);
 }
 
-.card{
-  width:100%;max-width:390px;padding:30px;border-radius:36px;
-  background:var(--glass);backdrop-filter:blur(30px);
-  box-shadow:0 30px 60px rgba(0,0,0,.12);
-  animation:fadeUp .7s ease forwards;
+/* ===================== */
+/*  BACKGROUND BLUR      */
+/* ===================== */
+
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(255,180,100,.35),transparent 40%),
+    radial-gradient(circle at 80% 30%,rgba(120,170,255,.35),transparent 45%),
+    var(--bg-light);
+  filter:blur(40px);
+  z-index:-1;
 }
 
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(20px) scale(.98)}
-  to{opacity:1;transform:none}
+/* ===================== */
+/*  BOTTOM SHEET         */
+/* ===================== */
+
+.sheet{
+  width:100%;
+  max-width:420px;
+  padding:18px 22px 34px;
+  border-radius:28px 28px 0 0;
+  background:var(--card-light);
+  backdrop-filter:blur(30px) saturate(180%);
+  box-shadow:0 -20px 60px rgba(0,0,0,.25);
+  animation:sheetUp .8s cubic-bezier(.2,.8,.2,1);
 }
+
+@keyframes sheetUp{
+  from{transform:translateY(100%)}
+  to{transform:none}
+}
+
+.handle{
+  width:38px;
+  height:5px;
+  border-radius:3px;
+  background:rgba(0,0,0,.2);
+  margin:0 auto 14px;
+}
+
+/* ===================== */
+/*  TYPOGRAPHY           */
+/* ===================== */
+
+h1{
+  font-size:20px;
+  font-weight:400;
+  text-align:center;
+  margin:6px 0 4px;
+}
+
+.sub{
+  text-align:center;
+  font-size:14px;
+  color:var(--sub-light);
+  margin-bottom:22px;
+}
+
+/* ===================== */
+/*  INPUTS               */
+/* ===================== */
 
 input{
-  width:100%;padding:16px;border-radius:24px;border:none;
-  margin-bottom:16px;font-size:15px;
+  width:100%;
+  padding:15px 16px;
+  border-radius:18px;
+  border:none;
+  background:rgba(255,255,255,.85);
+  font-size:15px;
+  margin-bottom:14px;
 }
 
 .segment{
-  display:flex;background:#f1f1f1;border-radius:24px;
-  margin-bottom:16px;overflow:hidden;
+  display:flex;
+  background:rgba(255,255,255,.6);
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:14px;
 }
 
 .segment button{
-  flex:1;padding:12px;border:none;background:none;
-  font-size:14px;transition:.25s;
+  flex:1;
+  padding:12px;
+  border:none;
+  background:none;
+  font-size:14px;
+  transition:.35s cubic-bezier(.2,.8,.2,1);
 }
 
-.segment .active{background:#000;color:#fff}
-
-button.main{
-  width:100%;padding:18px;border-radius:28px;border:none;
-  background:var(--accent);color:#fff;
-  font-size:16px;font-weight:700;
-  box-shadow:0 16px 32px rgba(255,122,0,.45);
-  transition:.25s;
+.segment .active{
+  background:#000;
+  color:#fff;
 }
 
-button.main:active{transform:scale(.97)}
+/* ===================== */
+/*  MAIN BUTTON          */
+/* ===================== */
+
+.main{
+  width:100%;
+  padding:18px;
+  border-radius:22px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  font-size:16px;
+  font-weight:500;
+  box-shadow:0 18px 36px rgba(255,122,0,.45);
+  transition:
+    transform .25s cubic-bezier(.2,.8,.2,1),
+    box-shadow .25s;
+}
+
+.main:active{
+  transform:scale(.96);
+  box-shadow:0 10px 20px rgba(255,122,0,.35);
+}
+
+/* ===================== */
+/*  COPY FIELD           */
+/* ===================== */
 
 .copy{
-  margin-top:16px;padding:14px;border-radius:22px;
-  background:#f7f7f7;font-size:13px;
-  text-align:center;opacity:0;
-  transform:translateY(10px);transition:.3s;
+  margin-top:16px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.65);
+  text-align:center;
+  font-size:13px;
+  opacity:0;
+  transform:translateY(12px);
+  transition:.4s cubic-bezier(.2,.8,.2,1);
 }
 
-.copy.show{opacity:1;transform:none}
-.copy.copied{color:#25a244;font-weight:600}
+.copy.show{
+  opacity:1;
+  transform:none;
+}
+
+.copy.copied{
+  color:#25a244;
+  font-weight:500;
+}
 </style>
 </head>
 
 <body>
-<div class="card">
+<div class="bg"></div>
+
+<div class="sheet">
+  <div class="handle"></div>
+
+  <h1>Создание ссылки</h1>
+  <div class="sub">Ограниченный доступ к Proxy</div>
+
   <input id="waInput" placeholder="WhatsApp Proxy URL">
 
   <div class="segment">
@@ -106,11 +247,11 @@ function switchMode(m){
 }
 
 createBtn.onclick=async()=>{
-  if(!waInput.value) return shake(waInput);
+  if(!waInput.value) return;
 
   haptic();
-  createBtn.disabled=true;
   createBtn.textContent="Создание…";
+  createBtn.disabled=true;
 
   const res=await fetch("/api/create",{
     method:"POST",
@@ -132,7 +273,6 @@ createBtn.onclick=async()=>{
 };
 
 copyBox.onclick=()=>{
-  if(!lastLink) return;
   navigator.clipboard.writeText(lastLink);
   copyBox.textContent="Скопировано";
   copyBox.classList.add("copied");
@@ -140,12 +280,7 @@ copyBox.onclick=()=>{
 };
 
 function haptic(){
-  if(navigator.vibrate) navigator.vibrate(15);
-}
-
-function shake(el){
-  el.style.animation="shake .3s";
-  setTimeout(()=>el.style.animation="",300);
+  if(navigator.vibrate) navigator.vibrate(12);
 }
 </script>
 </body>

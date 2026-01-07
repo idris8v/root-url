@@ -30,10 +30,6 @@ CREATE TABLE IF NOT EXISTS links (
 
 app.post("/api/create", (req, res) => {
   const { whatsapp, mode, value } = req.body;
-  if (!whatsapp || !mode || !value) {
-    return res.status(400).json({ error: "Invalid data" });
-  }
-
   const token = genToken();
 
   let wa_left = parseInt(value);
@@ -55,17 +51,12 @@ app.post("/api/create", (req, res) => {
 });
 
 app.get("/:token", (req, res) => {
-  db.get(
-    "SELECT * FROM links WHERE token = ?",
-    [req.params.token],
-    (err, row) => {
-      if (!row) return res.send(renderExpired());
-      if (row.expires_at && Date.now() > row.expires_at)
-        return res.send(renderExpired());
-
-      res.send(renderProxyPage(row));
-    }
-  );
+  db.get("SELECT * FROM links WHERE token = ?", [req.params.token], (e, row) => {
+    if (!row) return res.send(renderExpired());
+    if (row.expires_at && Date.now() > row.expires_at)
+      return res.send(renderExpired());
+    res.send(renderProxyPage(row));
+  });
 });
 
 app.get("/go/wa/:token", (req, res) => {
@@ -81,7 +72,7 @@ app.get("/go/tg/:token", (req, res) => {
 });
 
 function handleClick(token, field, res, cb) {
-  db.get("SELECT * FROM links WHERE token = ?", [token], (err, row) => {
+  db.get("SELECT * FROM links WHERE token = ?", [token], (e, row) => {
     if (!row) return res.send(renderExpired());
     if (row.expires_at && Date.now() > row.expires_at)
       return res.send(renderExpired());
@@ -106,30 +97,72 @@ function renderProxyPage(row) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Proxy</title>
 <style>
+*{-webkit-tap-highlight-color:transparent}
 body{
-  margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+  margin:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   background:linear-gradient(180deg,#eef2f7,#dfe6ee);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+  font-weight:400;
 }
 .card{
-  width:100%;max-width:390px;padding:30px;border-radius:36px;
-  background:rgba(255,255,255,.85);backdrop-filter:blur(30px);
+  width:100%;
+  max-width:390px;
+  padding:28px;
+  border-radius:32px;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(30px);
   box-shadow:0 30px 60px rgba(0,0,0,.12);
+  animation:fade .6s ease;
 }
-h1{text-align:center;font-size:20px;margin-bottom:6px}
-.sub{text-align:center;font-size:14px;opacity:.6;margin-bottom:20px}
-.timer{text-align:center;font-size:15px;margin-bottom:18px}
+@keyframes fade{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+h1{
+  text-align:center;
+  font-size:19px;
+  margin-bottom:6px;
+}
+.sub{
+  text-align:center;
+  font-size:14px;
+  opacity:.55;
+  margin-bottom:22px;
+}
+.timer{
+  text-align:center;
+  font-size:14px;
+  margin-bottom:18px;
+}
 .btn{
-  display:flex;align-items:center;gap:14px;
-  padding:18px;border-radius:26px;
-  background:rgba(255,255,255,.9);
-  text-decoration:none;font-weight:600;
-  box-shadow:0 14px 28px rgba(0,0,0,.15);
-  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:16px;
+  border-radius:22px;
+  text-decoration:none;
+  margin-bottom:14px;
+  transition:.25s ease;
 }
-.btn img{width:22px}
-.wa{color:#25D366}
-.tg{color:#0088cc}
+.btn:active{
+  transform:scale(.97);
+}
+.btn svg{
+  width:22px;
+  height:22px;
+}
+.wa{
+  background:linear-gradient(180deg,#3ddc84,#2bb673);
+  color:#fff;
+}
+.tg{
+  background:linear-gradient(180deg,#4aa3df,#1c7ed6);
+  color:#fff;
+}
 </style>
 </head>
 <body>
@@ -139,15 +172,21 @@ h1{text-align:center;font-size:20px;margin-bottom:6px}
 
 ${remaining ? `<div class="timer" id="timer"></div>` : ""}
 
-<a class="btn wa" href="/go/wa/${row.token}">
-<img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/whatsapp.svg">
-Подключить WhatsApp
+<a class="btn wa" href="/go/wa/${row.token}" onclick="vibe()">
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M20.5 3.5A11 11 0 003.2 17.3L2 22l4.9-1.2A11 11 0 1020.5 3.5z" fill="white" opacity=".25"/>
+<path d="M16.6 13.5c-.3-.2-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.8.9-1 .9-.2 0-.4 0-.7-.2-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.2-.7.2-.2.3-.4.5-.6.2-.2.3-.3.5-.5.2-.2.3-.3.4-.5.1-.2 0-.4 0-.5-.1-.2-.7-1.7-1-2.3-.3-.6-.6-.5-.7-.5h-.6c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4 0 1.4 1 2.8 1.1 3 .1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.3.2-.6.2-1.1.2-1.2 0-.1-.2-.2-.4-.3z" fill="white"/>
+</svg>
+Подключить для WhatsApp
 </a>
 
-<a class="btn tg" href="/go/tg/${row.token}">
-<img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/telegram.svg">
-Подключить Telegram
+<a class="btn tg" href="/go/tg/${row.token}" onclick="vibe()">
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M22 2L2 11.8l5.6 2.1L9.6 21l3.1-4.2 4.9 3.6L22 2z" fill="white"/>
+</svg>
+Подключить для Telegram
 </a>
+
 </div>
 
 ${remaining ? `
@@ -161,6 +200,7 @@ setInterval(()=>{
  el.textContent="Ссылка активна ещё "+m+" мин "+s+" сек";
  t-=1000;
 },1000);
+function vibe(){ if(navigator.vibrate) navigator.vibrate(15); }
 </script>` : ""}
 
 </body>
@@ -182,34 +222,35 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
 .card{
-  max-width:390px;padding:32px;border-radius:36px;
+  max-width:390px;padding:30px;border-radius:32px;
   background:rgba(255,255,255,.9);backdrop-filter:blur(30px);
   text-align:center;box-shadow:0 30px 60px rgba(0,0,0,.12);
 }
-h1{font-size:20px;margin-bottom:10px}
-p{font-size:14px;opacity:.6;margin-bottom:22px}
+h1{font-size:19px;margin-bottom:10px}
+p{font-size:14px;opacity:.6;margin-bottom:20px}
 .arrow{
-  width:16px;height:16px;border-right:3px solid #ff7a00;
+  width:14px;height:14px;
+  border-right:3px solid #ff7a00;
   border-bottom:3px solid #ff7a00;
-  transform:rotate(45deg);margin:0 auto 12px;
+  transform:rotate(45deg);
+  margin:0 auto 12px;
   animation:float 1.4s infinite;
 }
 @keyframes float{
   0%,100%{transform:rotate(45deg) translate(0,0)}
-  50%{transform:rotate(45deg) translate(4px,4px)}
+  50%{transform:rotate(45deg) translate(3px,3px)}
 }
 a{
-  display:block;padding:18px;border-radius:28px;
+  display:block;padding:16px;border-radius:24px;
   background:linear-gradient(180deg,#ffb347,#ff7a00);
-  color:#fff;font-weight:700;text-decoration:none;
-  box-shadow:0 16px 32px rgba(255,122,0,.45);
+  color:#fff;font-weight:600;text-decoration:none;
 }
 </style>
 </head>
 <body>
 <div class="card">
 <h1>Срок действия ссылки завершён</h1>
-<p>Если хотите подключить крутой VPN — нажмите кнопку ниже.</p>
+<p>Если хотите подключить VPN — нажмите кнопку ниже.</p>
 <div class="arrow"></div>
 <a href="${VPN_LINK}">Подключить VPN</a>
 </div>
