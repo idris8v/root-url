@@ -3,56 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proxy Link Generator</title>
+<title>Proxy Generator</title>
 
 <style>
 body {
   margin: 0;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   background: linear-gradient(180deg, #f2f4f8, #e9ecf1);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
 .card {
   width: 360px;
+  padding: 24px;
+  border-radius: 28px;
   background: rgba(255,255,255,0.6);
   backdrop-filter: blur(20px);
-  border-radius: 28px;
-  padding: 24px;
-  box-shadow:
-    0 20px 40px rgba(0,0,0,0.1),
-    inset 0 1px 0 rgba(255,255,255,0.7);
 }
-h1 {
-  font-size: 18px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-input, textarea {
+input {
   width: 100%;
   padding: 12px;
   margin-bottom: 12px;
   border-radius: 14px;
   border: none;
-  font-size: 14px;
-  background: rgba(255,255,255,0.7);
 }
 button {
   width: 100%;
   padding: 14px;
   border-radius: 18px;
   border: none;
-  font-size: 15px;
   font-weight: 600;
-  cursor: pointer;
-  background: rgba(255,255,255,0.7);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
 }
 .result {
-  font-size: 13px;
   margin-top: 14px;
+  font-size: 13px;
   word-break: break-all;
 }
 </style>
@@ -60,35 +46,25 @@ button {
 
 <body>
 <div class="card">
-  <h1>Генерация Proxy-ссылки</h1>
-
   <input id="wa" placeholder="WhatsApp Proxy URL">
-  <input id="tg" placeholder="Telegram Proxy URL">
   <input id="views" type="number" min="1" value="1">
-
   <button onclick="generate()">Сгенерировать ссылку</button>
-
   <div class="result" id="result"></div>
 </div>
 
 <script>
 async function generate() {
-  const payload = {
-    whatsapp: document.getElementById("wa").value,
-    telegram: document.getElementById("tg").value
-  };
-
+  const whatsapp = document.getElementById("wa").value;
   const views = document.getElementById("views").value;
 
   const res = await fetch("/api/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ payload, views })
+    body: JSON.stringify({ whatsapp, views })
   });
 
   const data = await res.json();
-
-  document.getElementById("result").innerHTML =
+  document.getElementById("result").innerText =
     location.origin + "/l/" + data.token;
 }
 </script>
