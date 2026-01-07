@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Создание ссылки</title>
+<title>СОЗДАНИЕ ССЫЛКИ</title>
 
 <style>
 :root{
@@ -28,20 +28,27 @@
   -webkit-tap-highlight-color:transparent;
 }
 
+/* 🍎 APPLE FONT ONLY */
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display";
+  text-transform:uppercase;
+}
+
 body{
   margin:0;
-  min-height:100vh;
+  height:calc(var(--vh, 1vh) * 100);
   background:var(--bg);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
   display:flex;
   align-items:center;
   justify-content:center;
   color:var(--text);
-  overflow:hidden;
-  padding:0 16px; /* 🔑 ОТСТУПЫ СЛЕВА И СПРАВА */
+  padding:0 24px; /* 🔑 ОТСТУПЫ ОТ КРАЁВ ЭКРАНА */
 }
 
-/* BACKGROUND BLUR */
+/* BACKGROUND */
 .bg{
   position:fixed;
   inset:-40px;
@@ -56,12 +63,15 @@ body{
 /* SHEET */
 .sheet{
   width:100%;
-  max-width:380px; /* 🔑 НЕ ПРИЛИПАЕТ К КРАЯМ */
-  padding:22px 22px 34px;
+  max-width:360px; /* 🔒 НИКОГДА НЕ НА ВСЮ ШИРИНУ */
+  max-height:calc(var(--vh, 1vh) * 100 - 40px);
+  padding:26px 22px 34px;
   border-radius:32px;
   background:var(--card);
   backdrop-filter:blur(30px) saturate(180%);
   box-shadow:0 30px 80px rgba(0,0,0,.25);
+  overflow:auto;
+  text-align:center; /* 🎯 ЦЕНТРИРОВАНИЕ ВСЕГО ТЕКСТА */
   animation:sheetCenter .9s cubic-bezier(.22,1,.36,1);
 }
 
@@ -81,32 +91,36 @@ body{
   height:5px;
   border-radius:3px;
   background:rgba(0,0,0,.25);
-  margin:0 auto 16px;
+  margin:0 auto 18px;
 }
 
 /* TEXT */
 h1{
-  text-align:center;
   font-size:20px;
-  font-weight:400;
-  margin-bottom:6px;
+  font-weight:500;
+  margin-bottom:8px;
+  letter-spacing:.04em;
 }
+
 .sub{
-  text-align:center;
-  font-size:14px;
+  font-size:13px;
   color:var(--sub);
-  margin-bottom:22px;
+  margin-bottom:24px;
+  letter-spacing:.08em;
 }
 
 /* INPUTS */
 input{
   width:100%;
-  padding:15px 16px;
+  padding:16px;
   border-radius:18px;
   border:none;
   background:rgba(255,255,255,.9);
-  font-size:15px;
+  font-size:14px;
+  text-align:center;
   margin-bottom:14px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display";
+  text-transform:uppercase;
 }
 
 /* SEGMENT */
@@ -123,7 +137,9 @@ input{
   padding:12px;
   border:none;
   background:none;
-  font-size:14px;
+  font-size:13px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display";
+  letter-spacing:.06em;
   transition:.35s cubic-bezier(.22,1,.36,1);
 }
 
@@ -140,21 +156,17 @@ input{
   border:none;
   background:var(--accent);
   color:#fff;
-  font-size:16px;
-  font-weight:500;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.08em;
   box-shadow:
     0 18px 36px rgba(255,122,0,.45),
     inset 0 1px 0 rgba(255,255,255,.4);
-  transition:
-    transform .25s cubic-bezier(.22,1,.36,1),
-    box-shadow .25s;
+  transition:transform .25s cubic-bezier(.22,1,.36,1);
 }
 
 .main:active{
   transform:translateY(2px) scale(.97);
-  box-shadow:
-    0 10px 20px rgba(255,122,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.25);
 }
 
 /* COPY */
@@ -163,8 +175,8 @@ input{
   padding:14px;
   border-radius:16px;
   background:rgba(255,255,255,.7);
-  text-align:center;
-  font-size:13px;
+  font-size:12px;
+  letter-spacing:.06em;
   opacity:0;
   transform:scale(.96);
   transition:.4s cubic-bezier(.22,1,.36,1);
@@ -177,7 +189,7 @@ input{
 
 .copy.copied{
   color:#25a244;
-  font-weight:500;
+  font-weight:600;
 }
 </style>
 </head>
@@ -188,24 +200,33 @@ input{
 <div class="sheet">
   <div class="handle"></div>
 
-  <h1>Создание ссылки</h1>
-  <div class="sub">Ограниченный доступ к Proxy</div>
+  <h1>СОЗДАНИЕ ССЫЛКИ</h1>
+  <div class="sub">ОГРАНИЧЕННЫЙ ДОСТУП К PROXY</div>
 
-  <input id="waInput" placeholder="WhatsApp Proxy URL">
+  <input id="waInput" placeholder="PROXY URL">
 
   <div class="segment">
-    <button id="viewsBtn" class="active">Открытия</button>
-    <button id="timeBtn">Минуты</button>
+    <button id="viewsBtn" class="active">ОТКРЫТИЯ</button>
+    <button id="timeBtn">МИНУТЫ</button>
   </div>
 
   <input id="valueInput" type="number" min="1" value="1">
 
-  <button class="main" id="createBtn">Создать ссылку</button>
+  <button class="main" id="createBtn">СОЗДАТЬ ССЫЛКУ</button>
 
   <div class="copy" id="copyBox"></div>
 </div>
 
 <script>
+function setVH(){
+  document.documentElement.style.setProperty(
+    "--vh",
+    window.innerHeight * 0.01 + "px"
+  );
+}
+setVH();
+window.addEventListener("resize", setVH);
+
 let mode="views";
 let lastLink="";
 
@@ -213,6 +234,8 @@ const waInput=document.getElementById("waInput");
 const valueInput=document.getElementById("valueInput");
 const createBtn=document.getElementById("createBtn");
 const copyBox=document.getElementById("copyBox");
+const viewsBtn=document.getElementById("viewsBtn");
+const timeBtn=document.getElementById("timeBtn");
 
 viewsBtn.onclick=()=>switchMode("views");
 timeBtn.onclick =()=>switchMode("time");
@@ -221,14 +244,12 @@ function switchMode(m){
   mode=m;
   viewsBtn.classList.toggle("active",m==="views");
   timeBtn.classList.toggle("active",m==="time");
-  haptic();
 }
 
 createBtn.onclick=async()=>{
   if(!waInput.value) return;
 
-  haptic();
-  createBtn.textContent="Создание…";
+  createBtn.textContent="СОЗДАНИЕ…";
   createBtn.disabled=true;
 
   const res=await fetch("/api/create",{
@@ -246,20 +267,15 @@ createBtn.onclick=async()=>{
 
   copyBox.textContent=lastLink;
   copyBox.className="copy show";
-  createBtn.textContent="Создать ссылку";
+  createBtn.textContent="СОЗДАТЬ ССЫЛКУ";
   createBtn.disabled=false;
 };
 
 copyBox.onclick=()=>{
   navigator.clipboard.writeText(lastLink);
-  copyBox.textContent="Скопировано";
+  copyBox.textContent="СКОПИРОВАНО";
   copyBox.classList.add("copied");
-  haptic();
 };
-
-function haptic(){
-  if(navigator.vibrate) navigator.vibrate(12);
-}
 </script>
 </body>
 </html>
