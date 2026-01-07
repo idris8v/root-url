@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Подключение Proxy</title>
+<title>ПРОКСИ</title>
 
 <style>
 :root{
@@ -30,7 +30,7 @@
 body{
   margin:0;
   min-height:100vh;
-  padding:0 16px;
+  padding:0 20px; /* 🔑 SAFE ОТСТУПЫ */
   background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
   display:flex;
@@ -39,6 +39,7 @@ body{
   color:var(--text);
 }
 
+/* BACKGROUND */
 .bg{
   position:fixed;
   inset:-40px;
@@ -50,20 +51,21 @@ body{
   z-index:-1;
 }
 
+/* CARD */
 .sheet{
   width:100%;
-  max-width:380px;
-  padding:26px 22px 30px;
+  max-width:360px;
+  padding:28px 24px 32px;
   border-radius:32px;
   background:var(--card);
   backdrop-filter:blur(30px) saturate(180%);
   box-shadow:0 30px 80px rgba(0,0,0,.25);
-  animation:sheetIn .9s cubic-bezier(.22,1,.36,1);
+  animation:appear .9s cubic-bezier(.22,1,.36,1);
 }
 
-@keyframes sheetIn{
+@keyframes appear{
   from{
-    transform:translateY(120%) scale(.95);
+    transform:translateY(60px) scale(.96);
     opacity:0;
   }
   to{
@@ -72,36 +74,36 @@ body{
   }
 }
 
+/* TEXT */
 h1{
   text-align:center;
-  font-size:20px;
+  font-size:22px;
   font-weight:400;
+  letter-spacing:.08em;
   margin-bottom:6px;
 }
 
 .sub{
   text-align:center;
-  font-size:14px;
+  font-size:13px;
+  letter-spacing:.06em;
   color:var(--sub);
-  margin-bottom:22px;
+  margin-bottom:26px;
 }
 
-/* ===== BUTTONS ===== */
-
+/* BUTTONS */
 .btn{
   width:100%;
   padding:18px;
   border-radius:22px;
   border:none;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:16px;
+  font-size:14px;
+  letter-spacing:.06em;
   font-weight:400;
   color:#fff;
   margin-bottom:14px;
   box-shadow:
-    0 16px 32px rgba(0,0,0,.25),
+    0 16px 32px rgba(0,0,0,.22),
     inset 0 1px 0 rgba(255,255,255,.35);
   transition:
     transform .25s cubic-bezier(.22,1,.36,1),
@@ -116,17 +118,11 @@ h1{
 }
 
 .whatsapp{
-  background:linear-gradient(180deg,#31d16c,#25b65b);
+  background:linear-gradient(180deg,#34d77c,#27b765);
 }
 
 .telegram{
-  background:linear-gradient(180deg,#3daaf5,#1c7fe8);
-}
-
-.icon{
-  width:22px;
-  height:22px;
-  flex-shrink:0;
+  background:linear-gradient(180deg,#42a5f5,#1e88e5);
 }
 </style>
 </head>
@@ -135,23 +131,15 @@ h1{
 <div class="bg"></div>
 
 <div class="sheet">
-  <h1>Подключение Proxy</h1>
-  <div class="sub">Выберите сервис</div>
+  <h1>ПРОКСИ</h1>
+  <div class="sub">ВЫБЕРИТЕ СЕРВИС</div>
 
-  <!-- WhatsApp -->
   <button class="btn whatsapp">
-    <svg class="icon" viewBox="0 0 32 32" fill="white">
-      <path d="M19.11 17.44c-.29-.15-1.71-.84-1.98-.94-.26-.1-.45-.15-.64.15-.19.29-.74.94-.91 1.13-.17.19-.34.22-.63.07-.29-.15-1.23-.45-2.34-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.51.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.64-1.55-.88-2.13-.23-.55-.47-.48-.64-.49-.17-.01-.36-.01-.55-.01-.19 0-.51.07-.78.36-.27.29-1.02 1-.02 2.43 1 1.43 1.76 2.5 3.51 3.43 2.06 1.11 2.06.74 2.43.69.37-.05 1.2-.49 1.37-.96.17-.48.17-.89.12-.96-.05-.07-.26-.12-.55-.27z"/>
-    </svg>
-    Подключить для WhatsApp
+    ПОДКЛЮЧИТЬ ДЛЯ WHATSAPP
   </button>
 
-  <!-- Telegram -->
   <button class="btn telegram">
-    <svg class="icon" viewBox="0 0 24 24" fill="white">
-      <path d="M9.964 14.611l-.405 5.69c.58 0 .83-.25 1.13-.55l2.71-2.57 5.62 4.11c1.03.57 1.76.27 2.02-.95L24 2.88c.31-1.45-.53-2.02-1.54-1.65L1.14 9.3c-1.39.54-1.37 1.3-.25 1.65l5.59 1.74L19.53 5.5c.65-.43 1.25-.19.76.24"/>
-    </svg>
-    Подключить для Telegram
+    ПОДКЛЮЧИТЬ ДЛЯ TELEGRAM
   </button>
 </div>
 </body>
