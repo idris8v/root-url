@@ -13,7 +13,7 @@ const TELEGRAM_PROXY =
 const VPN_LINK = "https://freemanone.store/price.html";
 
 function genToken() {
-  return crypto.randomBytes(4).toString("base64url"); // ~6 символов
+  return crypto.randomBytes(4).toString("base64url");
 }
 
 const db = new sqlite3.Database("./database.db");
@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS links (
 
 app.post("/api/create", (req, res) => {
   const { whatsapp, mode, value } = req.body;
+  if (!whatsapp || !mode || !value) {
+    return res.status(400).json({ error: "Invalid data" });
+  }
+
   const token = genToken();
 
   let wa_left = parseInt(value);
@@ -56,7 +60,6 @@ app.get("/:token", (req, res) => {
     [req.params.token],
     (err, row) => {
       if (!row) return res.send(renderExpired());
-
       if (row.expires_at && Date.now() > row.expires_at)
         return res.send(renderExpired());
 
@@ -72,7 +75,7 @@ app.get("/go/wa/:token", (req, res) => {
 });
 
 app.get("/go/tg/:token", (req, res) => {
-  handleClick(req.params.token, "tg_left", res, row =>
+  handleClick(req.params.token, "tg_left", res, () =>
     res.redirect(TELEGRAM_PROXY)
   );
 });
@@ -93,8 +96,7 @@ function handleClick(token, field, res, cb) {
 }
 
 function renderProxyPage(row) {
-  const remaining =
-    row.expires_at ? row.expires_at - Date.now() : null;
+  const remaining = row.expires_at ? row.expires_at - Date.now() : null;
 
   return `
 <!DOCTYPE html>
@@ -110,19 +112,20 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
 .card{
-  width:100%;max-width:390px;padding:28px;border-radius:34px;
-  background:rgba(255,255,255,.8);backdrop-filter:blur(30px);
+  width:100%;max-width:390px;padding:30px;border-radius:36px;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(30px);
   box-shadow:0 30px 60px rgba(0,0,0,.12);
 }
 h1{text-align:center;font-size:20px;margin-bottom:6px}
-.sub{text-align:center;font-size:14px;opacity:.6;margin-bottom:18px}
+.sub{text-align:center;font-size:14px;opacity:.6;margin-bottom:20px}
 .timer{text-align:center;font-size:15px;margin-bottom:18px}
 .btn{
-  display:flex;align-items:center;gap:12px;
-  padding:16px;border-radius:26px;text-decoration:none;
+  display:flex;align-items:center;gap:14px;
+  padding:18px;border-radius:26px;
   background:rgba(255,255,255,.9);
-  box-shadow:0 12px 24px rgba(0,0,0,.15);
-  margin-bottom:14px;font-weight:600;
+  text-decoration:none;font-weight:600;
+  box-shadow:0 14px 28px rgba(0,0,0,.15);
+  margin-bottom:16px;
 }
 .btn img{width:22px}
 .wa{color:#25D366}
@@ -179,24 +182,24 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
 .card{
-  max-width:390px;padding:30px;border-radius:34px;
-  background:rgba(255,255,255,.85);backdrop-filter:blur(30px);
+  max-width:390px;padding:32px;border-radius:36px;
+  background:rgba(255,255,255,.9);backdrop-filter:blur(30px);
   text-align:center;box-shadow:0 30px 60px rgba(0,0,0,.12);
 }
 h1{font-size:20px;margin-bottom:10px}
-p{font-size:14px;opacity:.6;margin-bottom:20px}
+p{font-size:14px;opacity:.6;margin-bottom:22px}
 .arrow{
-  width:18px;height:18px;border-right:3px solid #ff7a00;
+  width:16px;height:16px;border-right:3px solid #ff7a00;
   border-bottom:3px solid #ff7a00;
-  transform:rotate(45deg);margin:0 auto 10px;
+  transform:rotate(45deg);margin:0 auto 12px;
   animation:float 1.4s infinite;
 }
 @keyframes float{
   0%,100%{transform:rotate(45deg) translate(0,0)}
-  50%{transform:rotate(45deg) translate(5px,5px)}
+  50%{transform:rotate(45deg) translate(4px,4px)}
 }
 a{
-  display:block;padding:16px;border-radius:26px;
+  display:block;padding:18px;border-radius:28px;
   background:linear-gradient(180deg,#ffb347,#ff7a00);
   color:#fff;font-weight:700;text-decoration:none;
   box-shadow:0 16px 32px rgba(255,122,0,.45);

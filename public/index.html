@@ -4,79 +4,148 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Создание ссылки</title>
+
 <style>
+:root{
+  --bg:linear-gradient(180deg,#eef2f7,#dfe6ee);
+  --glass:rgba(255,255,255,.9);
+  --accent:linear-gradient(180deg,#ffb347,#ff7a00);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
 body{
   margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,#eef2f7,#dfe6ee);
+  background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
+
 .card{
-  width:100%;max-width:390px;padding:28px;border-radius:34px;
-  background:rgba(255,255,255,.85);backdrop-filter:blur(30px);
+  width:100%;max-width:390px;padding:30px;border-radius:36px;
+  background:var(--glass);backdrop-filter:blur(30px);
   box-shadow:0 30px 60px rgba(0,0,0,.12);
+  animation:fadeUp .7s ease forwards;
 }
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px) scale(.98)}
+  to{opacity:1;transform:none}
+}
+
 input{
-  width:100%;padding:14px;border-radius:22px;border:none;
-  margin-bottom:14px;
+  width:100%;padding:16px;border-radius:24px;border:none;
+  margin-bottom:16px;font-size:15px;
 }
+
 .segment{
-  display:flex;background:#f1f1f1;border-radius:22px;margin-bottom:14px;
+  display:flex;background:#f1f1f1;border-radius:24px;
+  margin-bottom:16px;overflow:hidden;
 }
+
 .segment button{
-  flex:1;padding:12px;border:none;border-radius:22px;background:none;
+  flex:1;padding:12px;border:none;background:none;
+  font-size:14px;transition:.25s;
 }
+
 .segment .active{background:#000;color:#fff}
+
 button.main{
-  width:100%;padding:16px;border-radius:26px;border:none;
-  background:linear-gradient(180deg,#ffb347,#ff7a00);
-  color:#fff;font-weight:700;
+  width:100%;padding:18px;border-radius:28px;border:none;
+  background:var(--accent);color:#fff;
+  font-size:16px;font-weight:700;
+  box-shadow:0 16px 32px rgba(255,122,0,.45);
+  transition:.25s;
 }
+
+button.main:active{transform:scale(.97)}
+
 .copy{
-  margin-top:14px;padding:12px;border-radius:18px;
-  background:#f7f7f7;font-size:13px;cursor:pointer;
+  margin-top:16px;padding:14px;border-radius:22px;
+  background:#f7f7f7;font-size:13px;
+  text-align:center;opacity:0;
+  transform:translateY(10px);transition:.3s;
 }
-.copied{color:#25a244;font-weight:600}
+
+.copy.show{opacity:1;transform:none}
+.copy.copied{color:#25a244;font-weight:600}
 </style>
 </head>
+
 <body>
 <div class="card">
-<input id="wa" placeholder="WhatsApp Proxy URL">
+  <input id="waInput" placeholder="WhatsApp Proxy URL">
 
-<div class="segment">
-<button id="v" class="active" onclick="setMode('views')">Открытия</button>
-<button id="t" onclick="setMode('time')">Минуты</button>
-</div>
+  <div class="segment">
+    <button id="viewsBtn" class="active">Открытия</button>
+    <button id="timeBtn">Минуты</button>
+  </div>
 
-<input id="value" type="number" min="1" value="1">
-<button class="main" onclick="gen()">Создать ссылку</button>
+  <input id="valueInput" type="number" min="1" value="1">
 
-<div class="copy" id="copy" onclick="copy()">—</div>
+  <button class="main" id="createBtn">Создать ссылку</button>
+
+  <div class="copy" id="copyBox"></div>
 </div>
 
 <script>
 let mode="views";
-function setMode(m){
- mode=m;
- v.classList.toggle("active",m==="views");
- t.classList.toggle("active",m==="time");
+let lastLink="";
+
+const waInput=document.getElementById("waInput");
+const valueInput=document.getElementById("valueInput");
+const createBtn=document.getElementById("createBtn");
+const copyBox=document.getElementById("copyBox");
+
+viewsBtn.onclick=()=>switchMode("views");
+timeBtn.onclick =()=>switchMode("time");
+
+function switchMode(m){
+  mode=m;
+  viewsBtn.classList.toggle("active",m==="views");
+  timeBtn.classList.toggle("active",m==="time");
+  haptic();
 }
-let last="";
-async function gen(){
- const res=await fetch("/api/create",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({whatsapp:wa.value,mode,value:value.value})
- });
- const d=await res.json();
- last=location.origin+"/"+d.token;
- copy.innerText=last;
- copy.classList.remove("copied");
+
+createBtn.onclick=async()=>{
+  if(!waInput.value) return shake(waInput);
+
+  haptic();
+  createBtn.disabled=true;
+  createBtn.textContent="Создание…";
+
+  const res=await fetch("/api/create",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      whatsapp:waInput.value,
+      mode,
+      value:valueInput.value
+    })
+  });
+
+  const data=await res.json();
+  lastLink=location.origin+"/"+data.token;
+
+  copyBox.textContent=lastLink;
+  copyBox.className="copy show";
+  createBtn.textContent="Создать ссылку";
+  createBtn.disabled=false;
+};
+
+copyBox.onclick=()=>{
+  if(!lastLink) return;
+  navigator.clipboard.writeText(lastLink);
+  copyBox.textContent="Скопировано";
+  copyBox.classList.add("copied");
+  haptic();
+};
+
+function haptic(){
+  if(navigator.vibrate) navigator.vibrate(15);
 }
-function copy(){
- if(!last)return;
- navigator.clipboard.writeText(last);
- copy.innerText="Скопировано";
- copy.classList.add("copied");
+
+function shake(el){
+  el.style.animation="shake .3s";
+  setTimeout(()=>el.style.animation="",300);
 }
 </script>
 </body>
