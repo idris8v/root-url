@@ -94,26 +94,29 @@ function renderProxyPage(row) {
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Proxy</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ПРОКСИ</title>
 <style>
-*{-webkit-tap-highlight-color:transparent}
+*{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+html,body{margin:0;padding:0}
 body{
-  margin:0;
-  height:100vh;
+  height:100svh;
+  background:linear-gradient(180deg,#eef2f7,#dfe6ee);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+}
+.app{
+  height:100%;
+  padding:0 32px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(180deg,#eef2f7,#dfe6ee);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
-  font-weight:400;
 }
 .card{
   width:100%;
-  max-width:390px;
-  padding:28px;
+  max-width:360px;
+  padding:30px 26px 34px;
   border-radius:32px;
-  background:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.88);
   backdrop-filter:blur(30px);
   box-shadow:0 30px 60px rgba(0,0,0,.12);
   animation:fade .6s ease;
@@ -124,7 +127,8 @@ body{
 }
 h1{
   text-align:center;
-  font-size:19px;
+  font-size:20px;
+  font-weight:400;
   margin-bottom:6px;
 }
 .sub{
@@ -139,54 +143,38 @@ h1{
   margin-bottom:18px;
 }
 .btn{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:16px;
+  display:block;
+  padding:18px;
   border-radius:22px;
+  text-align:center;
   text-decoration:none;
+  font-size:14px;
+  letter-spacing:.05em;
+  color:#fff;
   margin-bottom:14px;
   transition:.25s ease;
 }
-.btn:active{
-  transform:scale(.97);
-}
-.btn svg{
-  width:22px;
-  height:22px;
-}
-.wa{
-  background:linear-gradient(180deg,#3ddc84,#2bb673);
-  color:#fff;
-}
-.tg{
-  background:linear-gradient(180deg,#4aa3df,#1c7ed6);
-  color:#fff;
-}
+.btn:active{transform:scale(.97)}
+.wa{background:linear-gradient(180deg,#3ddc84,#2bb673)}
+.tg{background:linear-gradient(180deg,#4aa3df,#1c7ed6)}
 </style>
 </head>
 <body>
+<div class="app">
 <div class="card">
-<h1>Подключение Proxy</h1>
-<div class="sub">Выберите сервис</div>
+<h1>ПРОКСИ</h1>
+<div class="sub">Подключи и у тебя будет работать всё без VPN</div>
 
 ${remaining ? `<div class="timer" id="timer"></div>` : ""}
 
 <a class="btn wa" href="/go/wa/${row.token}" onclick="vibe()">
-<svg viewBox="0 0 24 24" fill="none">
-<path d="M20.5 3.5A11 11 0 003.2 17.3L2 22l4.9-1.2A11 11 0 1020.5 3.5z" fill="white" opacity=".25"/>
-<path d="M16.6 13.5c-.3-.2-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.8.9-1 .9-.2 0-.4 0-.7-.2-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.2-.7.2-.2.3-.4.5-.6.2-.2.3-.3.5-.5.2-.2.3-.3.4-.5.1-.2 0-.4 0-.5-.1-.2-.7-1.7-1-2.3-.3-.6-.6-.5-.7-.5h-.6c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4 0 1.4 1 2.8 1.1 3 .1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.3.2-.6.2-1.1.2-1.2 0-.1-.2-.2-.4-.3z" fill="white"/>
-</svg>
-Подключить для WhatsApp
+ПОДКЛЮЧИТЬ ДЛЯ WHATSAPP
 </a>
 
 <a class="btn tg" href="/go/tg/${row.token}" onclick="vibe()">
-<svg viewBox="0 0 24 24" fill="none">
-<path d="M22 2L2 11.8l5.6 2.1L9.6 21l3.1-4.2 4.9 3.6L22 2z" fill="white"/>
-</svg>
-Подключить для Telegram
+ПОДКЛЮЧИТЬ ДЛЯ TELEGRAM
 </a>
-
+</div>
 </div>
 
 ${remaining ? `
@@ -213,27 +201,39 @@ function renderExpired() {
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Истекло</title>
 <style>
+html,body{margin:0;padding:0}
 body{
-  margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+  height:100svh;
   background:linear-gradient(180deg,#eef2f7,#dfe6ee);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
 }
-.card{
-  max-width:390px;padding:30px;border-radius:32px;
-  background:rgba(255,255,255,.9);backdrop-filter:blur(30px);
-  text-align:center;box-shadow:0 30px 60px rgba(0,0,0,.12);
+.app{
+  height:100%;
+  padding:0 32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-h1{font-size:19px;margin-bottom:10px}
+.card{
+  max-width:360px;
+  padding:32px;
+  border-radius:32px;
+  background:rgba(255,255,255,.9);
+  backdrop-filter:blur(30px);
+  text-align:center;
+  box-shadow:0 30px 60px rgba(0,0,0,.12);
+}
+h1{font-size:20px;margin-bottom:10px}
 p{font-size:14px;opacity:.6;margin-bottom:20px}
 .arrow{
   width:14px;height:14px;
   border-right:3px solid #ff7a00;
   border-bottom:3px solid #ff7a00;
   transform:rotate(45deg);
-  margin:0 auto 12px;
+  margin:0 auto 14px;
   animation:float 1.4s infinite;
 }
 @keyframes float{
@@ -241,18 +241,23 @@ p{font-size:14px;opacity:.6;margin-bottom:20px}
   50%{transform:rotate(45deg) translate(3px,3px)}
 }
 a{
-  display:block;padding:16px;border-radius:24px;
+  display:block;
+  padding:16px;
+  border-radius:24px;
   background:linear-gradient(180deg,#ffb347,#ff7a00);
-  color:#fff;font-weight:600;text-decoration:none;
+  color:#fff;
+  text-decoration:none;
 }
 </style>
 </head>
 <body>
+<div class="app">
 <div class="card">
 <h1>Срок действия ссылки завершён</h1>
 <p>Если хотите подключить VPN — нажмите кнопку ниже.</p>
 <div class="arrow"></div>
-<a href="${VPN_LINK}">Подключить VPN</a>
+<a href="${VPN_LINK}">ПОДКЛЮЧИТЬ VPN</a>
+</div>
 </div>
 </body>
 </html>`;
