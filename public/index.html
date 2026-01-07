@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Proxy</title>
 
 <style>
 :root{
   --bg:#eef2f7;
-  --card:rgba(255,255,255,.85);
+  --card:rgba(255,255,255,.9);
   --text:#111;
   --sub:rgba(0,0,0,.55);
   --accent:linear-gradient(180deg,#ffb347,#ff7a00);
@@ -17,59 +17,45 @@
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#0f1115;
-    --card:rgba(28,28,30,.9);
+    --card:rgba(28,28,30,.95);
     --text:#fff;
     --sub:rgba(255,255,255,.55);
   }
 }
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+html,body{
+  margin:0;
+  padding:0;
 }
 
 body{
-  margin:0;
-  min-height:100vh;
-  padding:0 20px;
+  height:100svh; /* ФИКС ДЛЯ iOS */
   background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   color:var(--text);
 }
 
-.bg{
-  position:fixed;
-  inset:-40px;
-  background:
-    radial-gradient(circle at 20% 30%,rgba(255,180,100,.35),transparent 45%),
-    radial-gradient(circle at 80% 20%,rgba(120,170,255,.35),transparent 45%),
-    var(--bg);
-  filter:blur(50px);
-  z-index:-1;
+.app{
+  height:100%;
+  padding:0 32px; /* УВЕЛИЧЕННЫЕ ОТСТУПЫ */
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .card{
   width:100%;
-  max-width:360px;
-  padding:28px 24px 32px;
+  max-width:340px;
+  padding:30px 24px 34px;
   border-radius:32px;
   background:var(--card);
   backdrop-filter:blur(30px) saturate(180%);
   box-shadow:0 30px 80px rgba(0,0,0,.25);
-  animation:show .8s cubic-bezier(.22,1,.36,1);
 }
 
-.hidden{
-  display:none;
-}
-
-@keyframes show{
-  from{transform:translateY(40px) scale(.96);opacity:0}
-  to{transform:none;opacity:1}
-}
+.hidden{display:none;}
 
 h1{
   text-align:center;
@@ -87,17 +73,18 @@ h1{
 
 input{
   width:100%;
-  padding:15px 16px;
+  padding:16px;
   border-radius:18px;
   border:none;
-  background:rgba(255,255,255,.95);
+  background:rgba(255,255,255,.96);
   font-size:15px;
   margin-bottom:14px;
 }
 
+/* ПЕРЕКЛЮЧАТЕЛЬ */
 .segment{
   display:flex;
-  background:rgba(255,255,255,.7);
+  background:rgba(255,255,255,.75);
   border-radius:18px;
   overflow:hidden;
   margin-bottom:14px;
@@ -109,13 +96,15 @@ input{
   border:none;
   background:none;
   font-size:14px;
+  cursor:pointer;
 }
 
-.segment .active{
+.segment button.active{
   background:#000;
   color:#fff;
 }
 
+/* КНОПКИ */
 .main{
   width:100%;
   padding:18px;
@@ -127,6 +116,16 @@ input{
   margin-top:6px;
 }
 
+.link-box{
+  margin-top:16px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.85);
+  font-size:13px;
+  text-align:center;
+  word-break:break-all;
+}
+
 .btn{
   width:100%;
   padding:18px;
@@ -134,8 +133,8 @@ input{
   border:none;
   font-size:14px;
   letter-spacing:.05em;
-  margin-bottom:14px;
   color:#fff;
+  margin-bottom:14px;
 }
 
 .whatsapp{background:linear-gradient(180deg,#34d77c,#27b765);}
@@ -144,47 +143,74 @@ input{
 </head>
 
 <body>
-<div class="bg"></div>
+<div class="app">
 
-<!-- ЭКРАН 1: СОЗДАНИЕ -->
-<div class="card" id="createScreen">
-  <h1>Создание ссылки</h1>
-  <div class="sub">Ограниченный доступ к Proxy</div>
+  <!-- ЭКРАН 1 -->
+  <div class="card" id="screenCreate">
+    <h1>Создание ссылки</h1>
+    <div class="sub">Ограниченный доступ к Proxy</div>
 
-  <input placeholder="WhatsApp Proxy URL">
+    <input id="proxyInput" placeholder="WhatsApp Proxy URL">
 
-  <div class="segment">
-    <button class="active">Открытия</button>
-    <button>Минуты</button>
+    <div class="segment">
+      <button id="modeViews" class="active">Открытия</button>
+      <button id="modeTime">Минуты</button>
+    </div>
+
+    <input id="valueInput" type="number" value="1">
+
+    <button class="main" id="createBtn">Создать ссылку</button>
+
+    <div id="result" class="hidden">
+      <div class="link-box" id="linkBox"></div>
+      <button class="main" onclick="goConnect()">Продолжить</button>
+    </div>
   </div>
 
-  <input type="number" value="1">
+  <!-- ЭКРАН 2 -->
+  <div class="card hidden" id="screenConnect">
+    <h1>ПРОКСИ</h1>
+    <div class="sub">
+      Подключи и у тебя будет работать всё<br>
+      без VPN
+    </div>
 
-  <button class="main" onclick="showConnect()">Создать ссылку</button>
-</div>
-
-<!-- ЭКРАН 2: ПОДКЛЮЧЕНИЕ -->
-<div class="card hidden" id="connectScreen">
-  <h1>Прокси от FreemanVPN</h1>
-  <div class="sub">
-    Подключи наш прокси и WhatsApp и Telegram будут работать <br>
-    без VPN
+    <button class="btn whatsapp">ПОДКЛЮЧИТЬ ДЛЯ WHATSAPP</button>
+    <button class="btn telegram">ПОДКЛЮЧИТЬ ДЛЯ TELEGRAM</button>
   </div>
 
-  <button class="btn whatsapp">
-    ПОДКЛЮЧИТЬ ДЛЯ WHATSAPP
-  </button>
-
-  <button class="btn telegram">
-    ПОДКЛЮЧИТЬ ДЛЯ TELEGRAM
-  </button>
 </div>
 
 <script>
-function showConnect(){
-  document.getElementById("createScreen").classList.add("hidden");
-  document.getElementById("connectScreen").classList.remove("hidden");
-  if(navigator.vibrate) navigator.vibrate(12);
+let mode = "views";
+
+const modeViews = document.getElementById("modeViews");
+const modeTime  = document.getElementById("modeTime");
+const createBtn = document.getElementById("createBtn");
+const resultBox = document.getElementById("result");
+const linkBox   = document.getElementById("linkBox");
+
+modeViews.onclick = () => setMode("views");
+modeTime.onclick  = () => setMode("time");
+
+function setMode(m){
+  mode = m;
+  modeViews.classList.toggle("active", m==="views");
+  modeTime.classList.toggle("active", m==="time");
+}
+
+createBtn.onclick = () => {
+  // здесь обычно fetch к серверу
+  const fakeToken = Math.random().toString(36).slice(2,8);
+  const link = location.origin + "/" + fakeToken;
+
+  linkBox.textContent = link;
+  resultBox.classList.remove("hidden");
+};
+
+function goConnect(){
+  document.getElementById("screenCreate").classList.add("hidden");
+  document.getElementById("screenConnect").classList.remove("hidden");
 }
 </script>
 </body>
