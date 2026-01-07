@@ -2,105 +2,94 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Limited Link Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proxy Link Generator</title>
 
 <style>
 body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(180deg, #f2f4f8, #e9ecf1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #f2f4f8, #e9ecf1);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
-
 .card {
-    width: 360px;
-    padding: 24px;
-    border-radius: 24px;
-    background: rgba(255,255,255,0.55);
-    backdrop-filter: blur(20px);
-    box-shadow:
-        0 20px 40px rgba(0,0,0,0.08),
-        inset 0 1px 0 rgba(255,255,255,0.6);
+  width: 360px;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(20px);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.7);
 }
-
 h1 {
-    margin: 0 0 16px;
-    font-size: 18px;
-    font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 20px;
 }
-
-textarea, input {
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 14px;
-    border: none;
-    padding: 12px;
-    margin-bottom: 12px;
-    font-size: 14px;
-    background: rgba(255,255,255,0.7);
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  border: none;
+  font-size: 14px;
+  background: rgba(255,255,255,0.7);
 }
-
 button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 16px;
-    border: none;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    background: rgba(255,255,255,0.65);
-    box-shadow:
-        0 10px 20px rgba(0,0,0,0.12),
-        inset 0 1px 0 rgba(255,255,255,0.8);
-    transition: transform .1s ease;
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
 }
-
-button:active {
-    transform: translateY(1px);
-}
-
 .result {
-    margin-top: 16px;
-    font-size: 13px;
-    word-break: break-all;
+  font-size: 13px;
+  margin-top: 14px;
+  word-break: break-all;
 }
 </style>
 </head>
 
 <body>
 <div class="card">
-    <h1>Генерация ограниченной ссылки</h1>
+  <h1>Генерация Proxy-ссылки</h1>
 
-    <textarea id="data" rows="4"
-        placeholder="Proxy WhatsApp / любой текст / ссылка"></textarea>
+  <input id="wa" placeholder="WhatsApp Proxy URL">
+  <input id="tg" placeholder="Telegram Proxy URL">
+  <input id="views" type="number" min="1" value="1">
 
-    <input type="number" id="views" min="1" value="1"
-        placeholder="Количество открытий">
+  <button onclick="generate()">Сгенерировать ссылку</button>
 
-    <button onclick="generate()">Сгенерировать</button>
-
-    <div class="result" id="result"></div>
+  <div class="result" id="result"></div>
 </div>
 
 <script>
 async function generate() {
-    const payload = document.getElementById("data").value;
-    const views = document.getElementById("views").value;
+  const payload = {
+    whatsapp: document.getElementById("wa").value,
+    telegram: document.getElementById("tg").value
+  };
 
-    const res = await fetch("/api/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ payload, views })
-    });
+  const views = document.getElementById("views").value;
 
-    const json = await res.json();
-    document.getElementById("result").innerHTML =
-        "Ссылка:<br>" + location.origin + "/l/" + json.token;
+  const res = await fetch("/api/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ payload, views })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("result").innerHTML =
+    location.origin + "/l/" + data.token;
 }
 </script>
 </body>
