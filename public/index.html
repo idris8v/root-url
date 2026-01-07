@@ -3,20 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ПРОКСИ</title>
+<title>Proxy</title>
 
 <style>
 :root{
   --bg:#eef2f7;
-  --card:rgba(255,255,255,.82);
+  --card:rgba(255,255,255,.85);
   --text:#111;
   --sub:rgba(0,0,0,.55);
+  --accent:linear-gradient(180deg,#ffb347,#ff7a00);
 }
 
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#0f1115;
-    --card:rgba(28,28,30,.85);
+    --card:rgba(28,28,30,.9);
     --text:#fff;
     --sub:rgba(255,255,255,.55);
   }
@@ -30,7 +31,7 @@
 body{
   margin:0;
   min-height:100vh;
-  padding:0 20px; /* 🔑 SAFE ОТСТУПЫ */
+  padding:0 20px;
   background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
   display:flex;
@@ -39,7 +40,6 @@ body{
   color:var(--text);
 }
 
-/* BACKGROUND */
 .bg{
   position:fixed;
   inset:-40px;
@@ -51,8 +51,7 @@ body{
   z-index:-1;
 }
 
-/* CARD */
-.sheet{
+.card{
   width:100%;
   max-width:360px;
   padding:28px 24px 32px;
@@ -60,79 +59,117 @@ body{
   background:var(--card);
   backdrop-filter:blur(30px) saturate(180%);
   box-shadow:0 30px 80px rgba(0,0,0,.25);
-  animation:appear .9s cubic-bezier(.22,1,.36,1);
+  animation:show .8s cubic-bezier(.22,1,.36,1);
 }
 
-@keyframes appear{
-  from{
-    transform:translateY(60px) scale(.96);
-    opacity:0;
-  }
-  to{
-    transform:none;
-    opacity:1;
-  }
+.hidden{
+  display:none;
 }
 
-/* TEXT */
+@keyframes show{
+  from{transform:translateY(40px) scale(.96);opacity:0}
+  to{transform:none;opacity:1}
+}
+
 h1{
   text-align:center;
-  font-size:22px;
+  font-size:20px;
   font-weight:400;
-  letter-spacing:.08em;
   margin-bottom:6px;
 }
 
 .sub{
   text-align:center;
-  font-size:13px;
-  letter-spacing:.06em;
+  font-size:14px;
   color:var(--sub);
-  margin-bottom:26px;
+  margin-bottom:22px;
 }
 
-/* BUTTONS */
+input{
+  width:100%;
+  padding:15px 16px;
+  border-radius:18px;
+  border:none;
+  background:rgba(255,255,255,.95);
+  font-size:15px;
+  margin-bottom:14px;
+}
+
+.segment{
+  display:flex;
+  background:rgba(255,255,255,.7);
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+
+.segment button{
+  flex:1;
+  padding:12px;
+  border:none;
+  background:none;
+  font-size:14px;
+}
+
+.segment .active{
+  background:#000;
+  color:#fff;
+}
+
+.main{
+  width:100%;
+  padding:18px;
+  border-radius:22px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  font-size:16px;
+  margin-top:6px;
+}
+
 .btn{
   width:100%;
   padding:18px;
   border-radius:22px;
   border:none;
   font-size:14px;
-  letter-spacing:.06em;
-  font-weight:400;
-  color:#fff;
+  letter-spacing:.05em;
   margin-bottom:14px;
-  box-shadow:
-    0 16px 32px rgba(0,0,0,.22),
-    inset 0 1px 0 rgba(255,255,255,.35);
-  transition:
-    transform .25s cubic-bezier(.22,1,.36,1),
-    box-shadow .25s;
+  color:#fff;
 }
 
-.btn:active{
-  transform:translateY(2px) scale(.97);
-  box-shadow:
-    0 10px 20px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.25);
-}
-
-.whatsapp{
-  background:linear-gradient(180deg,#34d77c,#27b765);
-}
-
-.telegram{
-  background:linear-gradient(180deg,#42a5f5,#1e88e5);
-}
+.whatsapp{background:linear-gradient(180deg,#34d77c,#27b765);}
+.telegram{background:linear-gradient(180deg,#42a5f5,#1e88e5);}
 </style>
 </head>
 
 <body>
 <div class="bg"></div>
 
-<div class="sheet">
-  <h1>ПРОКСИ</h1>
-  <div class="sub">ВЫБЕРИТЕ СЕРВИС</div>
+<!-- ЭКРАН 1: СОЗДАНИЕ -->
+<div class="card" id="createScreen">
+  <h1>Создание ссылки</h1>
+  <div class="sub">Ограниченный доступ к Proxy</div>
+
+  <input placeholder="WhatsApp Proxy URL">
+
+  <div class="segment">
+    <button class="active">Открытия</button>
+    <button>Минуты</button>
+  </div>
+
+  <input type="number" value="1">
+
+  <button class="main" onclick="showConnect()">Создать ссылку</button>
+</div>
+
+<!-- ЭКРАН 2: ПОДКЛЮЧЕНИЕ -->
+<div class="card hidden" id="connectScreen">
+  <h1>Прокси от FreemanVPN</h1>
+  <div class="sub">
+    Подключи наш прокси и WhatsApp и Telegram будут работать <br>
+    без VPN
+  </div>
 
   <button class="btn whatsapp">
     ПОДКЛЮЧИТЬ ДЛЯ WHATSAPP
@@ -142,5 +179,13 @@ h1{
     ПОДКЛЮЧИТЬ ДЛЯ TELEGRAM
   </button>
 </div>
+
+<script>
+function showConnect(){
+  document.getElementById("createScreen").classList.add("hidden");
+  document.getElementById("connectScreen").classList.remove("hidden");
+  if(navigator.vibrate) navigator.vibrate(12);
+}
+</script>
 </body>
 </html>
