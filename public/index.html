@@ -30,7 +30,7 @@
 
 body{
   margin:0;
-  height:100vh;
+  min-height:100vh;
   background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
   display:flex;
@@ -38,12 +38,13 @@ body{
   justify-content:center;
   color:var(--text);
   overflow:hidden;
+  padding:0 16px; /* 🔑 ОТСТУПЫ СЛЕВА И СПРАВА */
 }
 
 /* BACKGROUND BLUR */
 .bg{
   position:fixed;
-  inset:0;
+  inset:-40px;
   background:
     radial-gradient(circle at 20% 30%,rgba(255,180,100,.35),transparent 45%),
     radial-gradient(circle at 80% 20%,rgba(120,170,255,.35),transparent 45%),
@@ -55,7 +56,7 @@ body{
 /* SHEET */
 .sheet{
   width:100%;
-  max-width:420px;
+  max-width:380px; /* 🔑 НЕ ПРИЛИПАЕТ К КРАЯМ */
   padding:22px 22px 34px;
   border-radius:32px;
   background:var(--card);
@@ -108,6 +109,7 @@ input{
   margin-bottom:14px;
 }
 
+/* SEGMENT */
 .segment{
   display:flex;
   background:rgba(255,255,255,.65);
