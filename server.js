@@ -162,8 +162,8 @@ h1{
 <body>
 <div class="app">
 <div class="card">
-<h1>Прокси от Freeman VPN</h1>
-<div class="sub">Подключи и у тебя будет Whatsapp и Telegram будут работать без VPN</div>
+<h1> ⚡️ Прокси от Freeman VPN</h1>
+<div class="sub">Подключи наш прокси и у тебя  Whatsapp и Telegram будут работать без VPN!</div>
 
 ${remaining ? `<div class="timer" id="timer"></div>` : ""}
 
