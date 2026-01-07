@@ -168,11 +168,11 @@ h1{
 ${remaining ? `<div class="timer" id="timer"></div>` : ""}
 
 <a class="btn wa" href="/go/wa/${row.token}" onclick="vibe()">
-ПОДКЛЮЧИТЬ ДЛЯ WHATSAPP
+ПРОКСИ ДЛЯ WHATSAPP
 </a>
 
 <a class="btn tg" href="/go/tg/${row.token}" onclick="vibe()">
-ПОДКЛЮЧИТЬ ДЛЯ TELEGRAM
+ПРОКСИ ДЛЯ TELEGRAM
 </a>
 </div>
 </div>
