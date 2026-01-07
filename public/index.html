@@ -6,38 +6,22 @@
 <title>Создание ссылки</title>
 
 <style>
-/* ===================== */
-/*  iOS DESIGN TOKENS    */
-/* ===================== */
-
 :root{
-  --bg-light: #eef2f7;
-  --bg-dark: #0f1115;
-
-  --card-light: rgba(255,255,255,.75);
-  --card-dark: rgba(28,28,30,.75);
-
-  --text-light: #111;
-  --text-dark: #fff;
-
-  --sub-light: rgba(0,0,0,.5);
-  --sub-dark: rgba(255,255,255,.55);
-
-  --accent: linear-gradient(180deg,#ffb347,#ff7a00);
+  --bg:#eef2f7;
+  --card:rgba(255,255,255,.82);
+  --text:#111;
+  --sub:rgba(0,0,0,.55);
+  --accent:linear-gradient(180deg,#ffb347,#ff7a00);
 }
 
 @media (prefers-color-scheme: dark){
   :root{
-    --bg-light: var(--bg-dark);
-    --card-light: var(--card-dark);
-    --text-light: var(--text-dark);
-    --sub-light: var(--sub-dark);
+    --bg:#0f1115;
+    --card:rgba(28,28,30,.85);
+    --text:#fff;
+    --sub:rgba(255,255,255,.55);
   }
 }
-
-/* ===================== */
-/*  GLOBAL               */
-/* ===================== */
 
 *{
   box-sizing:border-box;
@@ -47,92 +31,86 @@
 body{
   margin:0;
   height:100vh;
-  background:var(--bg-light);
+  background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
   display:flex;
-  align-items:flex-end;
+  align-items:center;
   justify-content:center;
-  color:var(--text-light);
+  color:var(--text);
+  overflow:hidden;
 }
 
-/* ===================== */
-/*  BACKGROUND BLUR      */
-/* ===================== */
-
+/* BACKGROUND BLUR */
 .bg{
   position:fixed;
   inset:0;
   background:
-    radial-gradient(circle at 20% 20%,rgba(255,180,100,.35),transparent 40%),
-    radial-gradient(circle at 80% 30%,rgba(120,170,255,.35),transparent 45%),
-    var(--bg-light);
-  filter:blur(40px);
+    radial-gradient(circle at 20% 30%,rgba(255,180,100,.35),transparent 45%),
+    radial-gradient(circle at 80% 20%,rgba(120,170,255,.35),transparent 45%),
+    var(--bg);
+  filter:blur(50px);
   z-index:-1;
 }
 
-/* ===================== */
-/*  BOTTOM SHEET         */
-/* ===================== */
-
+/* SHEET */
 .sheet{
   width:100%;
   max-width:420px;
-  padding:18px 22px 34px;
-  border-radius:28px 28px 0 0;
-  background:var(--card-light);
+  padding:22px 22px 34px;
+  border-radius:32px;
+  background:var(--card);
   backdrop-filter:blur(30px) saturate(180%);
-  box-shadow:0 -20px 60px rgba(0,0,0,.25);
-  animation:sheetUp .8s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  animation:sheetCenter .9s cubic-bezier(.22,1,.36,1);
 }
 
-@keyframes sheetUp{
-  from{transform:translateY(100%)}
-  to{transform:none}
+@keyframes sheetCenter{
+  from{
+    transform:translateY(120%) scale(.94);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0) scale(1);
+    opacity:1;
+  }
 }
 
 .handle{
-  width:38px;
+  width:36px;
   height:5px;
   border-radius:3px;
-  background:rgba(0,0,0,.2);
-  margin:0 auto 14px;
+  background:rgba(0,0,0,.25);
+  margin:0 auto 16px;
 }
 
-/* ===================== */
-/*  TYPOGRAPHY           */
-/* ===================== */
-
+/* TEXT */
 h1{
+  text-align:center;
   font-size:20px;
   font-weight:400;
-  text-align:center;
-  margin:6px 0 4px;
+  margin-bottom:6px;
 }
-
 .sub{
   text-align:center;
   font-size:14px;
-  color:var(--sub-light);
+  color:var(--sub);
   margin-bottom:22px;
 }
 
-/* ===================== */
-/*  INPUTS               */
-/* ===================== */
-
+/* INPUTS */
 input{
   width:100%;
   padding:15px 16px;
   border-radius:18px;
   border:none;
-  background:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.9);
   font-size:15px;
   margin-bottom:14px;
 }
 
 .segment{
   display:flex;
-  background:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.65);
   border-radius:18px;
   overflow:hidden;
   margin-bottom:14px;
@@ -144,7 +122,7 @@ input{
   border:none;
   background:none;
   font-size:14px;
-  transition:.35s cubic-bezier(.2,.8,.2,1);
+  transition:.35s cubic-bezier(.22,1,.36,1);
 }
 
 .segment .active{
@@ -152,10 +130,7 @@ input{
   color:#fff;
 }
 
-/* ===================== */
-/*  MAIN BUTTON          */
-/* ===================== */
-
+/* MAIN BUTTON */
 .main{
   width:100%;
   padding:18px;
@@ -165,36 +140,37 @@ input{
   color:#fff;
   font-size:16px;
   font-weight:500;
-  box-shadow:0 18px 36px rgba(255,122,0,.45);
+  box-shadow:
+    0 18px 36px rgba(255,122,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.4);
   transition:
-    transform .25s cubic-bezier(.2,.8,.2,1),
+    transform .25s cubic-bezier(.22,1,.36,1),
     box-shadow .25s;
 }
 
 .main:active{
-  transform:scale(.96);
-  box-shadow:0 10px 20px rgba(255,122,0,.35);
+  transform:translateY(2px) scale(.97);
+  box-shadow:
+    0 10px 20px rgba(255,122,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.25);
 }
 
-/* ===================== */
-/*  COPY FIELD           */
-/* ===================== */
-
+/* COPY */
 .copy{
-  margin-top:16px;
+  margin-top:18px;
   padding:14px;
   border-radius:16px;
-  background:rgba(255,255,255,.65);
+  background:rgba(255,255,255,.7);
   text-align:center;
   font-size:13px;
   opacity:0;
-  transform:translateY(12px);
-  transition:.4s cubic-bezier(.2,.8,.2,1);
+  transform:scale(.96);
+  transition:.4s cubic-bezier(.22,1,.36,1);
 }
 
 .copy.show{
   opacity:1;
-  transform:none;
+  transform:scale(1);
 }
 
 .copy.copied{
